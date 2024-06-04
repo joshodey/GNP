@@ -15,6 +15,7 @@ opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 builder.Services.AddScoped<IRepository<ApplicationForm, int>, Repository<ApplicationForm, int>>();
 builder.Services.AddScoped<IRepository<Admin, long>, Repository<Admin, long>>();
 builder.Services.AddScoped<IRepository<Applicant, long>, Repository<Applicant, long>>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

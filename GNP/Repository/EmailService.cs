@@ -2,10 +2,11 @@
 using System.Net;
 using GNP.Configuration;
 using Microsoft.Extensions.Options;
+using GNP.IRepository;
 
-namespace GNP.Utilities
+namespace GNP.Repository
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         private readonly IConfiguration _configuration;
         ApplicationSettings applicationSettings;

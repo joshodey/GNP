@@ -5,6 +5,7 @@ using GNP.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GNP.Controllers
 {
@@ -13,12 +14,14 @@ namespace GNP.Controllers
         private readonly ILogger<HomeController> _logger;
         private UserManager<User> _user;
         private readonly IRepository<Applicant, long> _applicant;
+        readonly IEmailService _emailService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant)
+        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant, IEmailService emailService)
         {
             _logger = logger;
             _user = user;
             _applicant = applicant;
+            _emailService = emailService;
         }
 
         public IActionResult Index()
@@ -45,6 +48,22 @@ namespace GNP.Controllers
             {
                 return Error();
             }
+
+            var applicant = await _applicant.GetAsync(user.Id);
+            applicant.User = user;
+
+            ViewData["user"] = user;
+
+            return View("./Views/Form/ApplicantForm.cshtml", new ApplicationDashboardVM()
+            {
+                Applicant = applicant,
+                Locations = new List<SelectListItem>()
+                {
+                    new SelectListItem("Abuja", "Abuja"),
+                    new SelectListItem("Lagos", "Lagos"),
+                    new SelectListItem("Calabar", "Calabar")
+                }
+            });
 
         }
 
@@ -92,23 +111,13 @@ namespace GNP.Controllers
                 return Error();
             }
 
-            savedApplicant.User = savedUser;
 
 
+            await _emailService.SendMailAsync(user.Email, "General Work Permit Registration", "Dear Applicant, please login to continue");
 
-            ViewData["user"] = user;
 
-            return View("", new ApplicationDashboardVM()
-            {
-                Applicant = savedApplicant,
-                Locations = new List<SelectListItem>()
-                {
-                    new SelectListItem("Abuja", "Abuja"),
-                    new SelectListItem("Lagos", "Lagos"),
-                    new SelectListItem("Calabar", "Calabar")
-                }
-            });
-
+            
+            return Index();
         }
 
         public IActionResult Privacy()
