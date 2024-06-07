@@ -1,7 +1,11 @@
-﻿@{
+﻿@model GNP.ViewModel.LoginSignUpVM
+@{
     ViewData["Title"] = "Home Page";
 }
 
+<div class="logo">
+    <img src="~/images/logo.svg" alt="Lagos Free Zone" class="logo">
+</div>
 <div class="card mx-auto mt-5" style="max-width: 400px;">
     <div class="card-header">
         <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
@@ -18,40 +22,40 @@
             <div class="tab-pane fade show active" id="login" role="tabpanel" aria-labelledby="login-tab">
                 <form>
                     <div class="form-group">
-                        <label for="loginEmail">Email address</label>
-                        <input type="email" class="form-control" id="loginEmail" required>
+                        <label asp-for="Email">Email address</label>
+                        <input asp-for="Email" type="email" class="form-control" id="loginEmail" required>
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" class="form-control" id="loginPassword" required>
+                        <input asp-for="Password" type="password" class="form-control" id="loginPassword" required>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    <button asp-action="Login" type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
             </div>
             <div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
                 <form>
                     <div class="form-group">
-                        <label for="signupFirstName">First Name</label>
-                        <input type="text" class="form-control" id="signupFirstName" required>
+                        <label asp-for="FirstName">First Name</label>
+                        <input asp-for="FirstName" type="text" class="form-control" id="signupFirstName" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupLastName">Last Name</label>
-                        <input type="text" class="form-control" id="signupLastName" required>
+                        <label asp-for="LastName">Last Name</label>
+                        <input asp-for="LastName" type="text" class="form-control" id="signupLastName" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupEmail">Email address</label>
-                        <input type="email" class="form-control" id="signupEmail" required>
+                        <label asp-for="Email">Email address</label>
+                        <input asp-for="Email" type="email" class="form-control" id="signupEmail" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupPassword">Password</label>
-                        <input type="password" class="form-control" id="signupPassword" required>
+                        <label asp-for="Password">Password</label>
+                        <input asp-for="Password" type="password" class="form-control" id="signupPassword" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupConfirmPassword">Confirm Password</label>
-                        <input type="password" class="form-control" id="signupConfirmPassword" required>
+                        <label asp-for="ConfirmPassword">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" id="signupConfirmPassword" required>
                         <small id="passwordHelp" class="form-text text-muted"></small>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                    <button asp-action="register" type="submit" class="btn btn-primary btn-block">Sign Up</button>
                 </form>
             </div>
         </div>

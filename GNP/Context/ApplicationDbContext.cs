@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GNP.Context
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<User, Role, long>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         
@@ -19,7 +19,7 @@ namespace GNP.Context
             builder.ApplyConfiguration(new RoleConfiguration());
             builder.ApplyConfiguration(new DefaultAdminUserConfiguration());
             builder.ApplyConfiguration(new DefaultAdminConfiguration());
-            //builder.ApplyConfiguration(new DefaultAdminUserRole());
+            builder.ApplyConfiguration(new DefaultAdminUserRole());
 
             base.OnModelCreating(builder);
         }

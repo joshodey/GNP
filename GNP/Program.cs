@@ -1,7 +1,10 @@
+using GNP.Configuration;
 using GNP.Context;
 using GNP.IRepository;
 using GNP.Models;
 using GNP.Repository;
+using GNP.Service;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +18,16 @@ opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 builder.Services.AddScoped<IRepository<ApplicationForm, int>, Repository<ApplicationForm, int>>();
 builder.Services.AddScoped<IRepository<Admin, long>, Repository<Admin, long>>();
 builder.Services.AddScoped<IRepository<Applicant, long>, Repository<Applicant, long>>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
+builder.Services.ConfigureSession();
+
+builder.Services.AddIdentity<User, Role>(opt =>
+{
+    opt.User.RequireUniqueEmail = true;
+}).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+    
+
 
 var app = builder.Build();
 
@@ -26,12 +39,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",

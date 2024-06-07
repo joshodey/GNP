@@ -11,8 +11,9 @@ namespace GNP.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private UserManager<User> _user;
+        private readonly UserManager<User> _user;
         private readonly IRepository<Applicant, long> _applicant;
+        private ISession session;
 
         public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant)
         {
@@ -26,6 +27,7 @@ namespace GNP.Controllers
             return View();
         }
 
+        
         public async Task<IActionResult> LoginAsync(LoginSignUpVM credentials)
         {
             if (!ModelState.IsValid)
@@ -45,6 +47,24 @@ namespace GNP.Controllers
             {
                 return Error();
             }
+
+            var applicant = await _applicant.GetAsync(user.Id);
+            applicant.User = user;
+
+
+
+            HttpContext.Session.SetString("userId", user.Id.ToString());
+
+            return View("./Views/Form/ApplicantForm.cshtml", new Dashboard()
+            {
+                Applicant = applicant,
+                Locations = new List<SelectListItem>()
+                {
+                    new SelectListItem("Abuja", "Abuja"),
+                    new SelectListItem("Lagos", "Lagos"),
+                    new SelectListItem("Calabar", "Calabar")
+                }
+            });
 
         }
 
@@ -67,10 +87,34 @@ namespace GNP.Controllers
 
             if (!res.Succeeded)
             {
-                return Error();
+                var dataUser = await _user.FindByEmailAsync(credentials.Email);
+                
+                if (dataUser is null)
+                {
+                    return Error();
+                }
+
+                var dataApplicant = await _applicant.GetAsync(dataUser.Id);
+
+                if (dataApplicant is null)
+                {
+                    var applicantToSave = new Applicant()
+                    {
+                        CreatedAt = DateTime.Now,
+                        UserId = dataUser.Id,
+                    };
+
+                    var response = await _applicant.CreateAsync(applicantToSave);
+
+                    if (response is null)
+                    {
+                        return Error();
+                    }
+                }
+                
             }
             
-            await _user.AddToRoleAsync(user, "user");
+            await _user.AddToRoleAsync(user, "applicant");
 
             var savedUser = await _user.FindByEmailAsync(credentials.Email);
             if (savedUser is null)
@@ -80,7 +124,6 @@ namespace GNP.Controllers
 
             var applicant = new Applicant()
             {
-                Id = savedUser.Id,
                 CreatedAt = DateTime.UtcNow,
                 UserId = savedUser.Id,
             };
@@ -92,22 +135,7 @@ namespace GNP.Controllers
                 return Error();
             }
 
-            savedApplicant.User = savedUser;
-
-
-
-            ViewData["user"] = user;
-
-            return View("", new ApplicationDashboardVM()
-            {
-                Applicant = savedApplicant,
-                Locations = new List<SelectListItem>()
-                {
-                    new SelectListItem("Abuja", "Abuja"),
-                    new SelectListItem("Lagos", "Lagos"),
-                    new SelectListItem("Calabar", "Calabar")
-                }
-            });
+            return Index();
 
         }
 

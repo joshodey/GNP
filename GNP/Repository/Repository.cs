@@ -26,9 +26,9 @@ namespace GNP.Repository
             return await SaveChangesAsync();
         }
 
-        public async Task<List<T>> GetAllAsync()
+        public IQueryable<T> GetAllAsync()
         {
-            return await _context.Set<T>().ToListAsync();
+            return  _context.Set<T>().AsQueryable<T>();
         }
 
         public async Task<T> GetAsync(Tkey Id)

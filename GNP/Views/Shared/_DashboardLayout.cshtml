@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid row">
+    <div class="col-md-3">
+        <div class="sidebar">
+            <img src="logo.svg" alt="Lagos Free Zone" class="logo">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Action Taken</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Incident Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Asset Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">List of Values</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Job Portal</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Data Collection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Permit to Work</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">PPE Management</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Safety Observation</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Fire Safety</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Emergency Preparedness</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-9">
+        @RenderBody()
+    </div>
+</div>
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GNP.Controllers
+namespace GNP.ViewModel
 {
     public class LoginSignUpVM
     {
@@ -11,17 +11,17 @@ namespace GNP.Controllers
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
 
-        public bool ConfirmPasswordReset 
+        public bool ConfirmPasswordReset
         {
             get
             {
-                return this.Password == this.ConfirmPassword;
-            }   
+                return Password == ConfirmPassword;
+            }
         }
     }
 }

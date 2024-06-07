@@ -6,6 +6,6 @@
         Task<T> UpdateAsync(T entity);
         Task<bool> DeleteAsync(T entity);
         Task<T> GetAsync(Tkey Id);
-        Task<List<T>> GetAllAsync();
+        IQueryable<T> GetAllAsync();
     }
 }

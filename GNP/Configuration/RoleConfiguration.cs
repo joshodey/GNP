@@ -1,25 +1,26 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using GNP.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GNP.Configuration
 {
-    public class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
+    public class RoleConfiguration : IEntityTypeConfiguration<Role>
     {
-        public void Configure(EntityTypeBuilder<IdentityRole> builder)
+        public void Configure(EntityTypeBuilder<Role> builder)
         {
             builder.HasData(
-                new IdentityRole()
+                new Role()
                 {
-                    Id = "1",
+                    Id = 1,
                     Name = "admin",
                     NormalizedName = "ADMIN",
                 });
 
             builder.HasData(
-                new IdentityRole()
+                new Role()
                 {
-                    Id = "2",
+                    Id = 2,
                     Name = "applicant",
                     NormalizedName = "APPLICANT"
                 });

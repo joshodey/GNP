@@ -43,18 +43,17 @@ namespace GNP.Configuration
         }
     }
 
-    //public class DefaultAdminUserRole : IEntityTypeConfiguration<IdentityUserRole<long>>
-    //{
-       
-    //    public void Configure(EntityTypeBuilder<Microsoft.AspNetCore.Identity.IdentityUserRole<long>> builder)
-    //    {
-    //        //builder.HasData(
-    //        //    new IdentityUserRole<long>()
-    //        //    {
-                    
-    //        //        RoleId = 1,
-    //        //        UserId = 1,
-    //        //    });
-    //    }
-    //}
+    public class DefaultAdminUserRole : IEntityTypeConfiguration<IdentityUserRole<long>>
+    {
+
+        public void Configure(EntityTypeBuilder<Microsoft.AspNetCore.Identity.IdentityUserRole<long>> builder)
+        {
+            builder.HasData(
+                new IdentityUserRole<long>()
+                {
+                    RoleId = 1,
+                    UserId = 1,
+                });
+        }
+    }
 }
