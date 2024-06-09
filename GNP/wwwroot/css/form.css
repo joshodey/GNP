@@ -70,11 +70,58 @@
 
 .nav-link.active {
     color: #060270 !important;
-    /*background-color: #007bff !important;*/
+    /*background-color: #007bff !important;*/ 
 }
 
 .rounded-item {
-    border: 5px solid #ced4da; /* Add your border color */
-    border-radius: 10px; /* Adjust the border-radius for the desired roundness */
-    padding: 10px; /* Add padding for better appearance */
+    border: 5px solid #ced4da; 
+    border-radius: 10px; 
+    padding: 10px; 
+}
+
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    color: black;
+}
+
+    nav img.logo {
+        height: 40px;
+    }
+
+    nav h3 {
+        margin: 0;
+        font-size: 1.5em;
+    }
+
+    nav img.profile-pic {
+        height: 40px;
+        border-radius: 50%;
+    }
+img.menu-image {
+    height: 20px;
+    margin-right: 10px; /* Adds space between the image and the text */
+}
+
+img.drop-image {
+    /*height: 20px;*/
+    position: absolute;
+    right: 76%;
+    top: auto;
+    padding-top: 0.5rem;
+    /*margin-left: auto;*/
+}
+
+.logo {
+    height : 15%;
+    width : 15%;
+}
+
+.nav-link {
+    width: inherit;
+    padding: 0rem .5rem 0rem 0rem;
 }
