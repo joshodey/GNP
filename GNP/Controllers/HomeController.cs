@@ -5,6 +5,7 @@ using GNP.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace GNP.Controllers
 {
@@ -15,11 +16,12 @@ namespace GNP.Controllers
         private readonly IRepository<Applicant, long> _applicant;
         private ISession session;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant)
+        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant, IEmailService emailService)
         {
             _logger = logger;
             _user = user;
             _applicant = applicant;
+            _emailService = emailService;
         }
 
         public IActionResult Index()

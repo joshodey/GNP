@@ -19,6 +19,7 @@ builder.Services.AddScoped<IRepository<ApplicationForm, int>, Repository<Applica
 builder.Services.AddScoped<IRepository<Admin, long>, Repository<Admin, long>>();
 builder.Services.AddScoped<IRepository<Applicant, long>, Repository<Applicant, long>>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+<<<<<<< HEAD
 
 builder.Services.ConfigureSession();
 
@@ -28,6 +29,8 @@ builder.Services.AddIdentity<User, Role>(opt =>
 }).AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
     
 
+=======
+>>>>>>> 5ad80b737bc20c74acb57f6aaf35ab33d2c082dd
 
 var app = builder.Build();
 
