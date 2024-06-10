@@ -3,61 +3,58 @@ using System.Net;
 using GNP.Configuration;
 using Microsoft.Extensions.Options;
 using GNP.IRepository;
+using GNP.Service;
+using GeneralWorkPermit.EmailService;
+using MimeKit;
+using MailKit.Net.Smtp;
+using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
-<<<<<<<< HEAD:GNP/Service/EmailService.cs
-namespace GNP.Service
-========
 namespace GNP.Repository
->>>>>>>> 5ad80b737bc20c74acb57f6aaf35ab33d2c082dd:GNP/Repository/EmailService.cs
+
 {
     public class EmailService : IEmailService
     {
-        private readonly IConfiguration _configuration;
-        ApplicationSettings applicationSettings;
-
-        public EmailService(IConfiguration configuration, IOptions<ApplicationSettings> appsettings)
+        private readonly EmailConfiguration _emailConfig;
+        public EmailService(EmailConfiguration emailConfig)
         {
-            _configuration = configuration;
-            applicationSettings = appsettings.Value;
+            _emailConfig = emailConfig;
+        }
+        public async Task SendEmailAsync(EmailMessage message)
+        {
+            var emailMessage = CreateEmailMessage(message);
+            await SendAsync(emailMessage);
         }
 
-        public async Task SendMailAsync(string to, string subject, string body)
+        private MimeMessage CreateEmailMessage(EmailMessage message)
         {
-            var emailConfig = _configuration.GetSection("EmailConfiguration");
-            //var emailConfig = applicationSettings.EmailConfiguration;
-
-            var fromAddress = new MailAddress(emailConfig["Username"], emailConfig["From"]);//emailConfig.Username, emailConfig.From);
-            var toAddress = new MailAddress(to);
-            string fromPassword = emailConfig["Password"]; //emailConfig["Password"];
-
-
-            var smtp = new SmtpClient
+            var emailMessage = new MimeMessage();
+            emailMessage.From.Add(new MailboxAddress("HMS", _emailConfig.From));
+            emailMessage.To.AddRange((IEnumerable<InternetAddress>)message.To);
+            emailMessage.Subject = message.Subject;
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = string.Format("<p>{0}</p>", message.Content) };
+            return emailMessage;
+        }
+        private async Task SendAsync(MimeMessage mailMessage)
+        {
+            using (var client = new SmtpClient())
             {
-                Host = emailConfig["SmtpServer"],
-                Port = int.Parse(emailConfig["Port"]),
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            };
-            //var smtp = new SmtpClient
-            //{
-            //    Host = emailConfig.SmtpServer,
-            //    Port = emailConfig.Port,
-            //    EnableSsl = true,
-            //    DeliveryMethod = SmtpDeliveryMethod.Network,
-            //    UseDefaultCredentials = false,
-            //    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            //};
-
-            using (var message = new MailMessage(fromAddress, toAddress)
-            {
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true
-            })
-            {
-                smtp.Send(message);
+                try
+                {
+                    await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, true);
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    await client.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+                    await client.SendAsync(mailMessage);
+                }
+                catch
+                {
+                    //log an error message or throw an exception or both.
+                    throw;
+                }
+                finally
+                {
+                    client.Disconnect(true);
+                    client.Dispose();
+                }
             }
         }
     }

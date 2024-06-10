@@ -8,6 +8,7 @@
     padding: 15px;
     border-right: 1px solid #ddd;
     height: 100vh;
+
 }
 
     .sidebar .logo {
@@ -18,6 +19,7 @@
 
     .sidebar .nav-link {
         color: #333;
+        justify-content: space-between;
     }
 
         .sidebar .nav-link.active {
@@ -36,9 +38,7 @@
     margin-bottom: 20px;
 }
 
-.form-group {
-    margin-bottom: 5%;
-}
+
 
 .btn {
     margin-right: 10px;
@@ -110,18 +110,145 @@ img.menu-image {
 img.drop-image {
     /*height: 20px;*/
     position: absolute;
-    right: 76%;
+    right: 74%;
     top: auto;
     padding-top: 0.5rem;
     /*margin-left: auto;*/
 }
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border: 2px solid black;
+}
+
+    .active-menu {
+        background-color: darkblue !important;
+        border-color: darkblue !important;
+        color: white;
+    }
 
 .logo {
     height : 15%;
     width : 15%;
 }
 
+.form-group1 {
+    margin-bottom: 5%;
+}
+
 .nav-link {
     width: inherit;
-    padding: 0rem .5rem 0rem 0rem;
+    /*padding: 0rem .5rem 0rem 0rem;*/
+    background-color: white;
+    border: solid 1px rgb(0, 0, 0, 0.1);
+    border-bottom: solid 2px rgba(0, 0, 0, 0.5);
+}
+
+.nav-items {
+    margin-bottom: 80%;
+}
+
+.assess {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2% 0% 2% 0;
+}
+.assess label {
+    margin-left: 15px;
+}
+
+.form-check-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.form-check {
+    display: inline-flex;
+    align-items: center;
+}
+
+.spacer-yes {
+    position: absolute;
+    right: 15%;
+}
+
+.spacer-no {
+    position: absolute;
+    right: 11%;
+}
+
+.form-group.assess label {
+    white-space: normal; /* Allows the text to wrap */
+    max-width: calc(100% - 120px);
+    /*margin-bottom: 10px;*/ /* Adds some space between the label and the radio buttons */
+}
+
+.form-table {
+    border: solid 2px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding-bottom: 25px;
+    
+}
+
+.odd {
+    background-color: #f8f9fa;
+}
+
+.even {
+    background-color: rgba(0, 100, 255, 0.1);
+}
+
+#otherPPE {
+    width: 50%;
+    height: auto;
+    margin-top: 5px;
+}
+
+.custom-checkbox input[type="checkbox"] {
+    width: 20px; 
+    height: 20px; 
+}
+
+.list-items {
+    margin-left: 15px;
+}
+
+.form-section {
+    margin: 20px 0;
+}
+
+.form-section label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-section input[type="checkbox"] {
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+select {
+    width: 30%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    border: solid 2px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    gap: 10px;
 }

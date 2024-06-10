@@ -6,230 +6,262 @@
     
 }
 
+@if(!string.IsNullOrEmpty(Model.Admin))
+{
+    <div >
+        @Model.SuccessReport
+    </div>
+}
+
 <ul class="nav nav-tabs pb-5">
     <li class="nav-item">
-        <a class="nav-link active" href="#general-work-permit" data-toggle="tab">
-            <span class="rounded-item">1</span>General Work Permit
+        <a class="nav-link active-menu" id="gen-menu"  data-toggle="tab">
+            <span class="circle">1</span>General Work Permit
         </a>
     </li>
     <li class="mx-4"> ______________________</li>
     <li class="nav-item">
-        <a class="nav-link" href="#risk-assessment" data-toggle="tab">Risk Assessment</a>
+        <a class="nav-link" id="rev-menu"  data-toggle="tab">
+            <span class="circle">2</span>Risk Assessment
+        </a>
     </li>
 </ul>
 
 <form asp-controller="Form" asp-action="Submit" method="post">
     <div id="form-container">
         <div id="page1" class="row">
-            <div class="col-md-6 form-group">
+            <div class="col-md-6 form-group1">
                 <label asp-for="Applicant.User.FirstName" class="control-label"></label>
                 <input asp-for="Applicant.User.FirstName" id="firstname" class="form-control" readonly />
                 <span asp-validation-for="Applicant.User.FirstName" class="text-danger"></span>
             </div>
-            <div class="col-6 form-group">
+            <div class="col-6 form-group1">
                 <label asp-for="Applicant.User.LastName" class="control-label">Surname</label>
                 <input asp-for="Applicant.User.LastName" id="surname" class="form-control" readonly />
                 <span asp-validation-for="Applicant.User.LastName" class="text-danger"></span>
             </div>
-            <div class="col-md-6 form-group position-relative">
+            <div class="col-md-6 form-group1 position-relative">
                 <label asp-for="Form.PermitNumber" class="control-label">Permit Number</label>
                 <input asp-for="Form.PermitNumber" id="permitNumber" class="form-control" />
             </div>
-            <div class="col-md-6 form-group position-relative">
+            <div class="col-md-6 form-group1 position-relative">
                 <label asp-for="Form.JSANumber" class="control-label">JSA No</label>
                 <input asp-for="Form.JSANumber" id="jsaNo" class="form-control" />
             </div>
-            <div class="col-md-6 form-group">
+            <div class="col-md-6 form-group1">
                 <label asp-for="Form.Company" class="control-label">Company</label>
                 <input asp-for="Form.Company" id="company" class="form-control" />
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group1 col-md-6">
                 <label for="location" class="control-label">Location</label>
                 @Html.DropDownListFor(model => model.Form.Location, Model.Locations, "--select--", new { @class = "form-control", @id = "location" })
             </div>
-            <div class="col-md-6 form-group">
+            <div class="col-md-6 form-group1">
                 <label asp-for="Form.StartDate" class="control-label">StartDate/Time</label>
                 <input asp-for="Form.StartDate" type="datetime-local" id="startDateTime" class="form-control" />
             </div>
-            <div class="col-md-6 form-group">
+            <div class="col-md-6 form-group1">
                 <label asp-for="Form.EndDate" class="control-label">EndDate/Time</label>
                 <input asp-for="Form.EndDate" type="datetime-local" id="endDateTime" class="form-control" />
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group1 col-md-12">
                 <label asp-for="Form.WorkActivityDescription" class="control-label">Work Activity Description</label>
                 <input asp-for="Form.WorkActivityDescription" id="workActivityDescription" class="form-control" />
             </div>
 
-            <button id="next-btn" class="btn btn-primary">Next</button>
+            <button id="next-btn" class="btn btn-primary btn-sm">Next</button>
         </div>
 
         <div id="page2" style="display:none;">
-            <h5>Declaration</h5>
-            <label>I hereby declare that I have:</label>
+
             <div class="form-group">
                 <label>Has a risk assessment been conducted for the work activity?</label>
                 <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasConductedRiskAssesment, true) Yes
+                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasConductedRiskAssesment, true, new {id = "riskAssessmentYes"}) Yes
                 </div>
                 <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasConductedRiskAssesment, false) No
+                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasConductedRiskAssesment, false, new {id = "riskAssessmentNo"}) No
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Conducted a thorough inspection of the work area and identified potential hazards</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasIdentifiedPotentialHazard, true) Yes
+            <div id="error-message" style="display: none; color: red;">
+                You have to perform Risk Assessment first
+            </div>
+
+            <h4>Declaration</h4>
+            <label>I hereby declare that I have:</label>
+           
+            <div class="form-table">
+                <div class="form-group assess odd">
+                    <label>Conducted a thorough inspection of the work area and identified potential hazards</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasIdentifiedPotentialHazard, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasIdentifiedPotentialHazard, false) No
+                    </div>
                 </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasIdentifiedPotentialHazard, false) No
+
+                <div class="form-group assess even">
+                    <label>Ensured all necessary precautions have been taken to mitigate risks associated with the work activity.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.EnsuredWorkActivity, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.EnsuredWorkActivity, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess odd">
+                    <label>Verified that all personnel involved in the work activity have received appropriate training and possess the required skills.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedRequiredSkills, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedRequiredSkills, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess even">
+                    <label>Confirmed that all relevant permits, licenses, and authorizations have been obtained.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.ConfirmedPermits, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.ConfirmedPermits, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess odd">
+                    <label>Verified that the work area is free from any potential hazards or risks associated with the work activity.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedWorkArea, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedWorkArea, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess even">
+                    <label>Established a communication plan for emergencies. Conducted a final inspection before authorizing the work activity.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyCommunication, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyCommunication, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess odd">
+                    <label>Communicated all necessary safety precautions to workers.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasSafetyCommunicated, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasSafetyCommunicated, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess even">
+                    <label>Verified that workers are aware of the proper procedures for handling tools and equipment related to the work activity.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedHandlingTools, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedHandlingTools, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess odd">
+                    <label>Ensured that workers are trained in the safe operation of machinery and equipment relevant to the work activity.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.IsTrainedInMachineOperations, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.IsTrainedInMachineOperations, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess even">
+                    <label>Implemented a permit-to-work system, if required.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasPTWSystem, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasPTWSystem, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess odd">
+                    <label>Verified that workers have received proper training on general safety measures and practices.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasGeneralSafetyMeasures, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasGeneralSafetyMeasures, false) No
+                    </div>
+                </div>
+
+                <div class="form-group assess even">
+                    <label>Established and communicated an emergency response plan.</label>
+                    <div class="form-check spacer-yes">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyResponsePlan, true) Yes
+                    </div>
+                    <div class="form-check spacer-no">
+                        @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyResponsePlan, false) No
+                    </div>
+                </div>
+
+                <div class="form-group list-items">
+                    <label>Provided workers with appropriate personal protective equipment (PPE) for the work activity.</label>
+                    <div class="custom-checkbox">
+                        @Html.CheckBoxFor(x => x.tools.HasSafetyGlasses)
+                        <label for="safetyGlasses">Safety glasses/Goggles</label>
+                    </div>
+                    <div class="custom-checkbox">
+                        @Html.CheckBoxFor(x => x.tools.HasGloves)
+                        <label for="gloves">Gloves</label>
+                    </div>
+                    <div class="custom-checkbox">
+                        @Html.CheckBoxFor(x => x.tools.HasSafetyFootwares)
+                        <label for="safetyFootwear">Safety footwear</label>
+                    </div>
+                    <div class="custom-checkbox">
+                        @Html.CheckBoxFor(x => x.tools.HasHardHat)
+                        <label for="hardHat">Hard hat</label>
+                    </div>
+                    <div class="custom-checkbox">
+                        @Html.CheckBoxFor(x => x.tools.HasHiViVest)
+                        <label for="hiVisVest">Hi-vis vest</label>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Form.ReviewAssessment.OtherProtectiveEquipment" placeholder="Others. Specify:" type="text" class="form-control" id="otherPPE" name="otherPPE">
+                    </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Ensured all necessary precautions have been taken to mitigate risks associated with the work activity.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.EnsuredWorkActivity, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.EnsuredWorkActivity, false) No
-                </div>
+            <div class="form-section">
+                <label>
+                    @Html.CheckBoxFor(x => x.Form.ReviewAssessment.AcceptDeclaration, new {id = "declaration"})
+                    I hereby declare that all necessary precautions and safety measures have been taken, and I understand and accept the responsibility for the safe execution of the work activity described above.
+                </label>
             </div>
-
-            <div class="form-group">
-                <label>Verified that all personnel involved in the work activity have received appropriate training and possess the required skills.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedRequiredSkills, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedRequiredSkills, false) No
-                </div>
+            <div class="form-section">
+                @Html.LabelFor(model => model.Admins, "To be Approved by")
+                @Html.DropDownListFor(model => model.Admin, Model.Admins)
             </div>
-
-            <div class="form-group">
-                <label>Confirmed that all relevant permits, licenses, and authorizations have been obtained.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.ConfirmedPermits, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.ConfirmedPermits, false) No
-                </div>
+            <div class="form-section">
+                @Html.LabelFor(model => model.AdminMail, "Email cc to")
+                @Html.DropDownListFor(model => model.AdminMail, Model.AdminEmails)
             </div>
-
-            <div class="form-group">
-                <label>Verified that the work area is free from any potential hazards or risks associated with the work activity.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedWorkArea, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedWorkArea, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Established a communication plan for emergencies. Conducted a final inspection before authorizing the work activity.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyCommunication, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyCommunication, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Communicated all necessary safety precautions to workers.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasSafetyCommunicated, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasSafetyCommunicated, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Verified that workers are aware of the proper procedures for handling tools and equipment related to the work activity.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedHandlingTools, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.VerifiedHandlingTools, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Ensured that workers are trained in the safe operation of machinery and equipment relevant to the work activity.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.IsTrainedInMachineOperations, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.IsTrainedInMachineOperations, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Implemented a permit-to-work system, if required.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasPTWSystem, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasPTWSystem, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Verified that workers have received proper training on general safety measures and practices.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasGeneralSafetyMeasures, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasGeneralSafetyMeasures, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Established and communicated an emergency response plan.</label>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyResponsePlan, true) Yes
-                </div>
-                <div class="form-check">
-                    @Html.RadioButtonFor(m => m.Form.ReviewAssessment.HasEmergencyResponsePlan, false) No
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Provided workers with appropriate personal protective equipment (PPE) for the work activity.</label>
-                <div class="custom-checkbox">
-                    <input type="checkbox" id="safetyGlasses" name="SelectedPPE" value="SafetyGlassesGoggles">
-                    <label for="safetyGlasses">Safety glasses/Goggles</label>
-                </div>
-                <div class="custom-checkbox">
-                    <input type="checkbox" id="gloves" name="SelectedPPE" value="Gloves">
-                    <label for="gloves">Gloves</label>
-                </div>
-                <div class="custom-checkbox">
-                    <input type="checkbox" id="safetyFootwear" name="SelectedPPE" value="SafetyFootwear">
-                    <label for="safetyFootwear">Safety footwear</label>
-                </div>
-                <div class="custom-checkbox">
-                    <input type="checkbox" id="hardHat" name="SelectedPPE" value="HardHat">
-                    <label for="hardHat">Hard hat</label>
-                </div>
-                <div class="custom-checkbox">
-                    <input type="checkbox" id="hiVisVest" name="SelectedPPE" value="HiVisVest">
-                    <label for="hiVisVest">Hi-vis vest</label>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Form.ReviewAssessment.OtherProtectiveEquipment">Others. Specify:</label>
-                    <input asp-for="Form.ReviewAssessment.OtherProtectiveEquipment" type="text" class="form-control" id="otherPPE" name="otherPPE">
-                </div>
-            </div>
+           
 
             <div class="row">
                 <button id="back-btn" class="btn btn-danger col-1">Back</button>
                 <div class="col-8"></div>
                 <button type="submit" id="submit-btn" class="col-1 btn btn-primary">Submit</button>
             </div>
-        </div>
+        </div>  
     </div>
 </form>
 
@@ -242,48 +274,48 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Navigation buttons
             $('#next-btn').click(function (e) {
                 e.preventDefault();
+                $('#gen-menu').addClass('active-menu');
+                $('#rev-menu').removeClass('active-menu');
                 $('#page1').hide();
                 $('#page2').show();
             });
 
             $('#back-btn').click(function (e) {
                 e.preventDefault();
+                $('#gen-menu').removeClass('active-menu');
+                $('#rev-menu').addClass('active-menu');
                 $('#page1').show();
                 $('#page2').hide();
             });
 
-            // Uncomment this block if you need to use the submit functionality
-            /*
-            $('#submit-btn').click(function (e) {
-                e.preventDefault();
-                var formData = {
-                    FirstName: $('#FirstName').val(),
-                    LastName: $('#LastName').val(),
-                    Email: $('#Email').val(),
-                    PhoneNumber: $('#PhoneNumber').val()
-                };
-
-                $.ajax({
-                    url: '@Url.Action("Submit", "Form")',
-                    type: 'POST',
-                    data: formData,
-                    success: function (response) {
-                        if (response.success) {
-                            $('#form-container').hide();
-                            $('#success-message').show();
-                        } else {
-                            // Handle validation errors
-                            alert('Form submission failed. Please fix the errors and try again.');
-                        }
-                    },
-                    error: function () {
-                        alert('An error occurred while submitting the form. Please try again.');
-                    }
-                });
+            // Form submit validation
+            $("form").submit(function (event) {
+                if (!$("#declaration").is(":checked")) {
+                    event.preventDefault();
+                }
             });
-            */
+
+            // Risk assessment check
+            function checkRiskAssessment() {
+                if ($('#riskAssessmentNo').is(':checked')) {
+                    $('#error-message').show();
+                    $('#submit-btn').prop('disabled', true);
+                } else {
+                    $('#error-message').hide();
+                    $('#submit-btn').prop('disabled', false);
+                }
+            }
+
+            // Event listeners for the radio buttons
+            $('#riskAssessmentYes, #riskAssessmentNo').change(function () {
+                checkRiskAssessment();
+            });
+
+            // Initial check in case the form is already filled
+            checkRiskAssessment();
         });
     </script>
 }

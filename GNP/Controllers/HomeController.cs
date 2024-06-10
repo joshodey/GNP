@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using System.Net;
+using GeneralWorkPermit.EmailService;
 using GNP.IRepository;
 using GNP.Models;
+using GNP.Service;
 using GNP.ViewModel;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +17,17 @@ namespace GNP.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<User> _user;
         private readonly IRepository<Applicant, long> _applicant;
+        private readonly IRepository<Admin, long> _admin;
         private ISession session;
+        private readonly IEmailService _emailService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, UserManager<User> user, IRepository<Applicant, long> applicant, IEmailService emailService, IRepository<Admin, long> admin)
         {
             _logger = logger;
             _user = user;
             _applicant = applicant;
             _emailService = emailService;
+            _admin = admin;
         }
 
         public IActionResult Index()
@@ -34,7 +40,7 @@ namespace GNP.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Error();
+                return LoginError(errorMessage: ModelState.ToString(), errorCode: (int)HttpStatusCode.BadRequest);
             }
 
 
@@ -42,12 +48,12 @@ namespace GNP.Controllers
 
             if (user is null)
             {
-                return Error();
+                return LoginError(errorMessage: "UserName or Password Invalid", errorCode: (int)HttpStatusCode.NotFound);
             }
 
             if (!(await _user.CheckPasswordAsync(user, credentials.Password)))
             {
-                return Error();
+                return LoginError(errorMessage: "UserName or Password Invalid", errorCode: (int)HttpStatusCode.NotFound);
             }
 
             var applicant = await _applicant.GetAsync(user.Id);
@@ -57,15 +63,24 @@ namespace GNP.Controllers
 
             HttpContext.Session.SetString("userId", user.Id.ToString());
 
-            return View("./Views/Form/ApplicantForm.cshtml", new Dashboard()
-            {
-                Applicant = applicant,
-                Locations = new List<SelectListItem>()
+            var locations = new List<SelectListItem>()
                 {
                     new SelectListItem("Abuja", "Abuja"),
                     new SelectListItem("Lagos", "Lagos"),
                     new SelectListItem("Calabar", "Calabar")
-                }
+            };
+
+            var AdminMails = await _admin.GetAllAsync().Include(x => x.User).ToListAsync();
+            var names = AdminMails.Select(mail => new SelectListItem(mail.User.FirstName + " " + mail.User.LastName, mail.User.Email
+                )).ToList();
+            var mails = AdminMails.Select(admin => new SelectListItem(admin.User.Email, admin.User.Email)).ToList();
+
+            return View("./Views/Form/ApplicantForm.cshtml", new Dashboard()
+            {
+                Applicant = applicant,
+                Locations = locations,
+                AdminEmails = mails,
+                Admins = names,
             });
 
         }
@@ -74,7 +89,7 @@ namespace GNP.Controllers
         {
             if (!ModelState.IsValid)
             {
-                Error();
+                return LoginError(errorMessage: ModelState.ToString(), errorCode: (int)HttpStatusCode.BadRequest);
             }
             var user = new User()
             {
@@ -93,7 +108,7 @@ namespace GNP.Controllers
                 
                 if (dataUser is null)
                 {
-                    return Error();
+                    return LoginError(errorMessage: "Something Went Wrong, Please try Again", errorCode: (int)HttpStatusCode.InternalServerError);
                 }
 
                 var dataApplicant = await _applicant.GetAsync(dataUser.Id);
@@ -110,7 +125,7 @@ namespace GNP.Controllers
 
                     if (response is null)
                     {
-                        return Error();
+                        return LoginError(errorMessage: "Something Went Wrong, Please try Again", errorCode: (int)HttpStatusCode.InternalServerError);
                     }
                 }
                 
@@ -121,7 +136,7 @@ namespace GNP.Controllers
             var savedUser = await _user.FindByEmailAsync(credentials.Email);
             if (savedUser is null)
             {
-                throw new Exception("user Not Saved");
+                return LoginError(errorMessage: "Something Went Wrong, Please try Again", errorCode: (int)HttpStatusCode.InternalServerError);
             }
 
             var applicant = new Applicant()
@@ -134,10 +149,10 @@ namespace GNP.Controllers
 
             if (savedApplicant is null)
             {
-                return Error();
+                return LoginError(errorMessage: "Something Went Wrong, Please try Again", errorCode: (int)HttpStatusCode.InternalServerError);
             }
 
-            return Index();
+            return View("./Views/Home/Index.cshtml");
 
         }
 
@@ -152,9 +167,14 @@ namespace GNP.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private IActionResult LoginError(string callbackCode, int errorCode)
+        private IActionResult LoginError(string errorMessage, int errorCode)
         {
-            return View();
+            var error = new ErrorViewModel()
+            {
+                ErrorMessage = errorMessage,
+                RequestId = errorCode.ToString(),
+            };
+            return View("./Views/Shared/Error.cshtml", error);
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿namespace GNP.Service
+﻿using GeneralWorkPermit.EmailService;
+
+namespace GNP.Service
 {
     public interface IEmailService
     {
-        Task SendMailAsync(string to, string subject, string body);
+        Task SendEmailAsync(EmailMessage message);
     }
 }

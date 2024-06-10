@@ -1,4 +1,5 @@
-﻿using GNP.IRepository;
+﻿using GeneralWorkPermit.EmailService;
+using GNP.IRepository;
 using GNP.Models;
 using GNP.Service;
 using GNP.ViewModel;
@@ -29,41 +30,65 @@ namespace GNP.Controllers
 
         public async Task<IActionResult> Submit(Dashboard reviewForm)
         {
-            if (reviewForm.Form is null)
+            try
             {
+                if (reviewForm.Form is null)
+                {
+                    return BadRequest();
+                }
+                string userId = HttpContext.Session.GetString("userId");
+
+                var applicant = _applicant.GetAllAsync().Include(c => c.User).FirstOrDefault(x => x.UserId == long.Parse(userId));
+
+                if (reviewForm.Applicant is null)
+                {
+                    return BadRequest("user did not sign in ");
+                }
+
+                reviewForm.Form.ReviewAssessment.ProtectiveEquipments = new List<ProtectiveEquipments>();
+
+                reviewForm.Form.ApplicantId = applicant.Id;
+                if (reviewForm.tools.HasSafetyFootwares)
+                    reviewForm.Form.ReviewAssessment.ProtectiveEquipments.Add(ProtectiveEquipments.SafetyFootwares);
+                if (reviewForm.tools.HasSafetyGlasses)
+                    reviewForm.Form.ReviewAssessment.ProtectiveEquipments.Add(ProtectiveEquipments.SafetyGlasses);
+                if (reviewForm.tools.HasGloves)
+                    reviewForm.Form.ReviewAssessment.ProtectiveEquipments.Add(ProtectiveEquipments.Glooves);
+                if (reviewForm.tools.HasHardHat)
+                    reviewForm.Form.ReviewAssessment.ProtectiveEquipments.Add(ProtectiveEquipments.HardHat);
+                if (reviewForm.tools.HasHiViVest)
+                    reviewForm.Form.ReviewAssessment.ProtectiveEquipments.Add(ProtectiveEquipments.HiVisVest);
+
+
+
+
+                var response = await _form.CreateAsync(reviewForm.Form);
+
+                if (response is null)
+                {
+                    return BadRequest();
+                }
+                var emailMessage = new EmailMessage(new List<string> {applicant.User.Email}, "New General Work Permit Registration", "Congraturations, your permit will be reviewed");
+                //send email to user
+                await _emailService.SendEmailAsync(emailMessage);
+
+
+                var admins = await _admin.GetAllAsync().Include(x => x.User).ToListAsync();
+                //send mail to admin
+                foreach (var admin in admins)
+                {
+                    if (admin.User.Email == reviewForm.AdminMail || reviewForm.Admin == admin.User.FirstName)
+                        await _emailService.SendEmailAsync(new EmailMessage(new List<string> { admin.User.Email}, "Applicant Await Approval", "ToApprove applicant, click here"));
+                }
+
+
+                return View("./Views/Form/ApplicantForm.cshtml", reviewForm);
+            }
+            catch (Exception ex)
+            {
+
                 return BadRequest();
             }
-            string userId = HttpContext.Session.GetString("userId");
-
-            var applicant = _applicant.GetAllAsync().Include(c => c.User).FirstOrDefault(x => x.UserId == long.Parse(userId));
-
-            if (reviewForm.Applicant is null)
-            {
-                return BadRequest("user did not sign in ");
-            }
-
-            reviewForm.Form.ApplicantId = applicant.Id;
-            
-
-            var response = await _form.CreateAsync(reviewForm.Form);
-
-            if (response is null)
-            {
-                return BadRequest();
-            }
-            //send email to user
-            await _emailService.SendMailAsync(applicant.User.Email, "Awaiting Approval", "your GWP awaits approval");
-
-
-            var admins= await _admin.GetAllAsync().Include(x => x.User).ToListAsync();
-            //send mail to admin
-            foreach (var admin in admins)
-            {
-                await _emailService.SendMailAsync(admin.User.Email, "Applican Await Approval", "ToApprove applicant, click here");
-            }
-            
-
-            return View("./Views/Form/Index.cshtml", reviewForm);
 
         }
     }
